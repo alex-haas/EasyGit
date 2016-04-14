@@ -15,10 +15,13 @@ import android.widget.TextView;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
+import org.androidannotations.annotations.SupposeUiThread;
 import org.androidannotations.annotations.ViewById;
 import org.eclipse.jgit.lib.ProgressMonitor;
+import org.eclipse.jgit.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 import de.ahaas.easygit.helper.PermissionHelper;
 import de.ahaas.easygit.helper.SharedPrefHelper;
@@ -101,41 +104,47 @@ public class RepositoryCloneDialogFragment extends DialogFragment {
         }
     };
 
-    private Runnable cloneTask = new Runnable() {
-        @Override
-        public void run() {
-            String cloneUrl            = cloneUrlView.getText().toString();
-            String repoName            = repoNameView.getText().toString();
-            boolean cloneSubmodules    = cloneSubmodulesView.isChecked();
-            boolean checkout           = checkoutView.isChecked();
-            String username            = usernameView.getText().toString();
-            String userpassword        = userpasswordView.getText().toString();
+    private Runnable cloneTask = () -> {
+        String cloneUrl            = cloneUrlView.getText().toString();
+        String repoName            = repoNameView.getText().toString();
+        boolean cloneSubmodules    = cloneSubmodulesView.isChecked();
+        boolean checkout           = checkoutView.isChecked();
+        String username            = usernameView.getText().toString();
+        String userpassword        = userpasswordView.getText().toString();
 
-            SharedPrefHelper.setLastUsername(getContext(), username);
-            SharedPrefHelper.setLastUserpassword(getContext(), userpassword);
+        SharedPrefHelper.setLastUsername(getContext(), username);
+        SharedPrefHelper.setLastUserpassword(getContext(), userpassword);
 
-            File repoFile = new File(SharedPrefHelper.getDefaultRepositoryPath(getContext()), repoName);
-            if(repoFile.exists()){
-                new AlertDialog.Builder(getContext())
-                        .setTitle("Repository already exists")
-                        .setMessage("The repository you are trying to clone already exists in the working directory.")
-                        .setNegativeButton("OK", null)
-                        .create()
-                        .show();
-                return;
-            }
-
-            RepositoryCloneTask cloneTask = new RepositoryCloneTask();
-            cloneTask.setCloneUrl(cloneUrl);
-            cloneTask.setProgressMonitor(cloneProgressMonitor);
-            cloneTask.setCheckout(checkout);
-            cloneTask.setCloneSubmodules(cloneSubmodules);
-            cloneTask.setDirectoryName(repoFile);
-            cloneTask.setOnComplete(() -> {
-                dismiss();
-            });
-            cloneTask.execute();
+        File repoFile = new File(SharedPrefHelper.getDefaultRepositoryPath(getContext()), repoName);
+        if(repoFile.exists()){
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Repository already exists")
+                    .setMessage("The repository you are trying to clone already exists in the working directory. Delete it and clone afterwards?")
+                    .setNegativeButton("No", null)
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        try {
+                            FileUtils.delete(repoFile, FileUtils.RECURSIVE);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        this.cloneTask.run();
+                    })
+                    .create()
+                    .show();
+            setDialogElementsEnabled(true);
+            return;
         }
+
+        RepositoryCloneTask cloneTask = new RepositoryCloneTask();
+        cloneTask.setCloneUrl(cloneUrl);
+        cloneTask.setProgressMonitor(cloneProgressMonitor);
+        cloneTask.setCheckout(checkout);
+        cloneTask.setCloneSubmodules(cloneSubmodules);
+        cloneTask.setDirectoryName(repoFile);
+        cloneTask.setOnComplete(() -> {
+            dismiss();
+        });
+        cloneTask.execute();
     };
 
     private TextWatcher moduleNameWatcher = new TextWatcher() {
@@ -169,10 +178,14 @@ public class RepositoryCloneDialogFragment extends DialogFragment {
 
     @Click(R.id.submit)
     void cloneRepo(){
+        setDialogElementsEnabled(false);
+        PermissionHelper.executeOrAskForPermission(this, getActivity(), NECESSARY_PERMISSIONS, PERMISSION_REQUEST_CODE, cloneTask);
+    }
+
+    @SupposeUiThread
+    void setDialogElementsEnabled(boolean enabled){
         submitButton.setEnabled(false);
         cancelButton.setEnabled(false);
-
-        PermissionHelper.executeOrAskForPermission(this, getActivity(), NECESSARY_PERMISSIONS, PERMISSION_REQUEST_CODE, cloneTask);
     }
 
     @Override
