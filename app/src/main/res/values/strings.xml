@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">EasyGit</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="permission_dialog_title">Berechtigungen in Android 6.0</string>
+    <string name="permission_dialog_text">Seit Android 6.0 wirst du um jede Benachrichtigung gefragt. Bitte gewähre die Berechtigungen sobald du darum gebeten wirst.</string>
+    <string name="permission_dialog_ok">OK</string>
+</resources>

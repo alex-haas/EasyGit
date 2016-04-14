@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dialog_vertical_padding"
+        android:paddingTop="@dimen/dialog_vertical_padding"
+        android:paddingLeft="@dimen/dialog_horizontal_padding"
+        android:paddingRight="@dimen/dialog_horizontal_padding"
+        android:theme="@style/AppTheme"
+        android:scrollbars="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.Material.Title"
+            android:text="Git Clone"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/cloneUrl"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:hint="Clone Url"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:hint="Local Repo name"
+            android:id="@+id/repoName" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clone Submodules"
+            android:id="@+id/cloneSubmodules"
+            android:checked="true"
+            android:layout_marginLeft="16px" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Checkout"
+            android:id="@+id/checkout"
+            android:checked="true"
+            android:layout_marginLeft="16px" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Enter only if an Authentication is necessary:"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="16dp" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/username"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:hint="User name" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/userpassword"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:hint="User password" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"
+                android:layout_weight="1"
+                android:id="@+id/cancel"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clone"
+                android:drawableLeft="@drawable/ic_get_app_white_24dp"
+                android:backgroundTint="@color/primary_button_selector"
+                android:textColor="@color/colorPrimaryText"
+                android:layout_weight="1"
+                android:id="@+id/submit"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/status"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+</ScrollView>
